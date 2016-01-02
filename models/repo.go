@@ -447,9 +447,9 @@ func (repo *Repository) cloneLink(isWiki bool) *CloneLink {
 	repo.Owner = repo.MustOwner()
 	cl := new(CloneLink)
 	if setting.SSHPort != 22 {
-		cl.SSH = fmt.Sprintf("ssh://%s@%s:%d/%s/%s.git", setting.RunUser, setting.SSHDomain, setting.SSHPort, repo.Owner.Name, repoName)
+		cl.SSH = fmt.Sprintf("ssh://%s@%s:%d/%s/%s/%s.git", setting.RunUser, setting.SSHDomain, setting.SSHPort, setting.RepoRootPath, repo.Owner.Name, repoName)
 	} else {
-		cl.SSH = fmt.Sprintf("%s@%s:%s/%s.git", setting.RunUser, setting.SSHDomain, repo.Owner.Name, repoName)
+		cl.SSH = fmt.Sprintf("%s@%s:%s/%s/%s.git", setting.RunUser, setting.SSHDomain, setting.RepoRootPath, repo.Owner.Name, repoName)
 	}
 	cl.HTTPS = fmt.Sprintf("%s%s/%s.git", setting.AppUrl, repo.Owner.Name, repoName)
 	return cl
@@ -826,6 +826,13 @@ func initRepository(e Engine, repoPath string, u *User, repo *Repository, opts C
 	if opts.AutoInit {
 		os.MkdirAll(tmpDir, os.ModePerm)
 		defer os.RemoveAll(tmpDir)
+
+		_, stderr, err := process.ExecDir(-1,
+			tmpDir, fmt.Sprintf("InitRepository(git update-server-info): %s", tmpDir),
+			"git", "update-server-info")
+		if err != nil {
+			return fmt.Errorf("InitRepository(git update-server-info): %s", stderr)
+		}
 
 		if err = prepareRepoCommit(repo, tmpDir, repoPath, opts); err != nil {
 			return fmt.Errorf("prepareRepoCommit: %v", err)
