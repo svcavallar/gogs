@@ -1609,7 +1609,7 @@ func GitFsck() {
 			repo := bean.(*Repository)
 			repoPath := repo.RepoPath()
 			if err := git.Fsck(repoPath, setting.Cron.RepoHealthCheck.Timeout, setting.Cron.RepoHealthCheck.Args...); err != nil {
-				desc := fmt.Sprintf("Fail to health check repository(%s)", repoPath)
+				desc := fmt.Sprintf("Fail to health check repository (%s): %v", repoPath, err)
 				log.Warn(desc)
 				if err = CreateRepositoryNotice(desc); err != nil {
 					log.Error(4, "CreateRepositoryNotice: %v", err)
