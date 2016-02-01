@@ -1045,7 +1045,9 @@ $(window).load(function () {
     if ($('#repo-clone-url').length > 0) {
         switch (localStorage.getItem('repo-clone-protocol')) {
             case 'ssh':
-                $('#repo-clone-ssh').click();
+                if ($('#repo-clone-ssh').click().length === 0) {
+                    $('#repo-clone-https').click();
+                };
                 break;
             default:
                 $('#repo-clone-https').click();
