@@ -1,9 +1,9 @@
 outPlattform=linux
 outArch=arm
-outPath=./output_"$outPlattform"_"$outArch"
+outPath=./bin/"$outPlattform"/"$outArch"
 
 rm -rf $outPath
-mkdir $outPath
+mkdir -p $outPath
 
 CGO_ENABLED=0 GOOS=$outPlattform GOARCH=$outArch go build ../gogs.go
 chmod +x gogs
